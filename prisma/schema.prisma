@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ciudades {
+  cod_postal BigInt       @id
+  nombre     String       @db.VarChar(50)
+  sucursales sucursales[]
+
+  @@index([cod_postal], map: "ciudades_cod_postal_index")
+}
+
+model failed_jobs {
+  id         BigInt   @id @default(autoincrement())
+  uuid       String   @unique(map: "failed_jobs_uuid_unique") @db.VarChar(255)
+  connection String
+  queue      String
+  payload    String
+  exception  String
+  failed_at  DateTime @default(now()) @db.Timestamp(0)
+}
+
+model migrations {
+  id        Int    @id @default(autoincrement())
+  migration String @db.VarChar(255)
+  batch     Int
+}
+
+model origenes {
+  id              BigInt            @id @default(autoincrement())
+  nombre          String            @db.VarChar(255)
+  descripcion     String
+  variedad_origen variedad_origen[]
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model password_resets {
+  email      String    @db.VarChar(255)
+  token      String    @db.VarChar(255)
+  created_at DateTime? @db.Timestamp(0)
+
+  @@index([email], map: "password_resets_email_index")
+  @@ignore
+}
+
+model personal_access_tokens {
+  id             BigInt    @id @default(autoincrement())
+  tokenable_type String    @db.VarChar(255)
+  tokenable_id   BigInt
+  name           String    @db.VarChar(255)
+  token          String    @unique(map: "personal_access_tokens_token_unique") @db.VarChar(64)
+  abilities      String?
+  last_used_at   DateTime? @db.Timestamp(0)
+  created_at     DateTime? @db.Timestamp(0)
+  updated_at     DateTime? @db.Timestamp(0)
+
+  @@index([tokenable_type, tokenable_id], map: "personal_access_tokens_tokenable_type_tokenable_id_index")
+}
+
+model sucursales {
+  id            BigInt      @id @default(autoincrement())
+  direccion     String      @db.VarChar(150)
+  tostaduria_id BigInt
+  ciudad_cp     BigInt
+  ciudades      ciudades    @relation(fields: [ciudad_cp], references: [cod_postal], onDelete: Cascade, map: "sucursales_ciudad_cp_foreign")
+  tostadurias   tostadurias @relation(fields: [tostaduria_id], references: [id], onDelete: Cascade, map: "sucursales_tostaduria_id_foreign")
+}
+
+model tipos {
+  id         BigInt       @id @default(autoincrement())
+  nombre     String       @db.VarChar(50)
+  variedades variedades[]
+}
+
+model tostadurias {
+  id         BigInt       @id @default(autoincrement())
+  nombre     String       @db.VarChar(100)
+  sucursales sucursales[]
+  variedades variedades[]
+}
+
+model users {
+  id                BigInt    @id @default(autoincrement())
+  name              String    @db.VarChar(255)
+  email             String    @unique(map: "users_email_unique") @db.VarChar(255)
+  email_verified_at DateTime? @db.Timestamp(0)
+  password          String    @db.VarChar(255)
+  remember_token    String?   @db.VarChar(100)
+  created_at        DateTime? @db.Timestamp(0)
+  updated_at        DateTime? @db.Timestamp(0)
+}
+
+model variedad_origen {
+  id          BigInt     @id @default(autoincrement())
+  variedad_id BigInt
+  origen_id   BigInt
+  origenes    origenes   @relation(fields: [origen_id], references: [id], onDelete: Cascade, map: "variedad_origen_origen_id_foreign")
+  variedades  variedades @relation(fields: [variedad_id], references: [id], onDelete: Cascade, map: "variedad_origen_variedad_id_foreign")
+
+  @@index([origen_id], map: "variedad_origen_origen_id_index")
+  @@index([variedad_id], map: "variedad_origen_variedad_id_index")
+}
+
+model variedades {
+  id              BigInt            @id @default(autoincrement())
+  nombre          String            @db.VarChar(100)
+  descripcion     String
+  url             String
+  imagen          String?
+  imagen_url      String?
+  published_at    DateTime?         @db.Timestamp(0)
+  tipo_id         BigInt
+  tostaduria_id   BigInt
+  tipos           tipos             @relation(fields: [tipo_id], references: [id], onDelete: Cascade, map: "variedades_tipo_id_foreign")
+  tostadurias     tostadurias       @relation(fields: [tostaduria_id], references: [id], onDelete: Cascade, map: "variedades_tostaduria_id_foreign")
+  variedad_origen variedad_origen[]
+}
