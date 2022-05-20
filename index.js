@@ -5,6 +5,10 @@ const PORT = 8080
 const { PrismaClient } =  require('@prisma/client')
 const prisma = new PrismaClient()
 
+const ciudadesRoute = require('./routes/ciudades')
+
+app.use('/ciudades', ciudadesRoute)
+
 app.listen(
     PORT,
     () => {
