@@ -111,7 +111,6 @@ model variedades {
   nombre          String            @db.VarChar(100)
   descripcion     String
   url             String
-  imagen          String?
   imagen_url      String?
   published_at    DateTime?         @db.Timestamp(0)
   tipo_id         BigInt
