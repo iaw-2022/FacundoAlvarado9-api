@@ -4,12 +4,19 @@ const createError = require('http-errors')
 const { PrismaClient } =  require('@prisma/client')
 const prisma = new PrismaClient()
 
-const sendResult = require('../utils/resultsSender')
+const sendResult = require('../utils/response/resultsSender')
+const paginationHelper = require('../utils/query/paginationHelper')
 
 
 const getAllCiudades = async (req, res, next) => {
+  const pageSize = paginationHelper.getPageSize(req, next)
+  const startIndex = paginationHelper.getStartIndex(req, next)
+
   try{
-      const ciudades = await prisma.ciudades.findMany({})
+      const ciudades = await prisma.ciudades.findMany({
+        skip: startIndex,
+        take: pageSize,
+      })
       sendResult(res, ciudades)
   } catch(error){
       next(error)
