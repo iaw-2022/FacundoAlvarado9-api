@@ -6,8 +6,10 @@ const { PrismaClient } =  require('@prisma/client')
 const prisma = new PrismaClient()
 
 const ciudadesRoute = require('./routes/ciudades')
+const variedadesRoute = require('./routes/variedades')
 
 app.use('/ciudades', ciudadesRoute)
+app.use('/variedades', variedadesRoute)
 
 app.listen(
     PORT,
