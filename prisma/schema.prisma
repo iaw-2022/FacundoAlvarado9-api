@@ -67,8 +67,8 @@ model sucursales {
   direccion     String      @db.VarChar(150)
   tostaduria_id BigInt
   ciudad_cp     BigInt
-  ciudades      ciudades    @relation(fields: [ciudad_cp], references: [cod_postal], onDelete: Cascade, map: "sucursales_ciudad_cp_foreign")
-  tostadurias   tostadurias @relation(fields: [tostaduria_id], references: [id], onDelete: Cascade, map: "sucursales_tostaduria_id_foreign")
+  ciudad      ciudades    @relation(fields: [ciudad_cp], references: [cod_postal], onDelete: Cascade, map: "sucursales_ciudad_cp_foreign")
+  tostaduria   tostadurias @relation(fields: [tostaduria_id], references: [id], onDelete: Cascade, map: "sucursales_tostaduria_id_foreign")
 }
 
 model tipos {
@@ -99,8 +99,8 @@ model variedad_origen {
   id          BigInt     @id @default(autoincrement())
   variedad_id BigInt
   origen_id   BigInt
-  origenes    origenes   @relation(fields: [origen_id], references: [id], onDelete: Cascade, map: "variedad_origen_origen_id_foreign")
-  variedades  variedades @relation(fields: [variedad_id], references: [id], onDelete: Cascade, map: "variedad_origen_variedad_id_foreign")
+  origen    origenes   @relation(fields: [origen_id], references: [id], onDelete: Cascade, map: "variedad_origen_origen_id_foreign")
+  variedad  variedades @relation(fields: [variedad_id], references: [id], onDelete: Cascade, map: "variedad_origen_variedad_id_foreign")
 
   @@index([origen_id], map: "variedad_origen_origen_id_index")
   @@index([variedad_id], map: "variedad_origen_variedad_id_index")
@@ -115,7 +115,7 @@ model variedades {
   published_at    DateTime?         @db.Timestamp(0)
   tipo_id         BigInt
   tostaduria_id   BigInt
-  tipos           tipos             @relation(fields: [tipo_id], references: [id], onDelete: Cascade, map: "variedades_tipo_id_foreign")
-  tostadurias     tostadurias       @relation(fields: [tostaduria_id], references: [id], onDelete: Cascade, map: "variedades_tostaduria_id_foreign")
-  variedad_origen variedad_origen[]
+  tipo           tipos             @relation(fields: [tipo_id], references: [id], onDelete: Cascade, map: "variedades_tipo_id_foreign")
+  tostaduria     tostadurias       @relation(fields: [tostaduria_id], references: [id], onDelete: Cascade, map: "variedades_tostaduria_id_foreign")
+  origenes variedad_origen[]
 }
