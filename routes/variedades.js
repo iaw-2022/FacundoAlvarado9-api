@@ -4,13 +4,12 @@ const { PrismaClient } =  require('@prisma/client')
 
 const prisma = new PrismaClient()
 const router = express.Router()
-const sucursalesRouter = express.Router({mergeParams: true})
 
-const ciudadesController = require('../controllers/variedades')
+const variedadesController = require('../controllers/variedades')
 
-router.get('', ciudadesController.getAllVariedades)
+router.get('', variedadesController.getAllVariedades)
 
-router.get('/:id', ciudadesController.getVariedadByID)
+router.get('/:id', variedadesController.getVariedadByID)
 
 
 module.exports = router

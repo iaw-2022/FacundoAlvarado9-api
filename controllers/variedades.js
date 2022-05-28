@@ -28,24 +28,47 @@ const getAllVariedades = async (req, res, next) => {
 
   try{
       const variedades = await prisma.variedades.findMany({
+        include: {
+          tipo: true,
+          origenes: {
+            include: {
+              origen:true
+            }
+          }
+        },
         skip: startIndex,
         take: pageSize,
       })
-      sendResult(res, variedades)
+
+      result = mapOrigenes(variedades)
+      sendResult(res, result)
+
   } catch(error){
       next(error)
   }
 }
 
 const getVariedadByID = async (req, res, next) =>{
-  const {id} = req.params
+  const {id} = req.params.id
   const variedad = await prisma.variedades.findMany({
     where: {
       id: Number(id)
     },
+    include: {
+      tipo: true,
+      origenes: {
+        include: {
+          origen:true
+        }
+      }
+    }
   })
 
-  sendResult(res, variedad)
+  result = mapOrigenes(variedad)
+  sendResult(res, result)
+
+}
+
 const getVariedadesByTostaduria = async (req, res, next) =>{
   const tost_id = req.params.id
 
@@ -85,11 +108,40 @@ const getVariedadesByTostaduria = async (req, res, next) =>{
     next(error)
   }
 }
+
+const getVariedadesByOrigen = async (req, res, next) =>{
+  const origen_id = req.params.id
+
+  const pageSize = paginationHelper.getPageSize(req, next)
+  const startIndex = paginationHelper.getStartIndex(req, next)
+
+  try{
+    const variedades = await prisma.variedades.findMany({
+      where: { origenes: { some: { id: Number(origen_id) } } },
+      include: {
+        tipo: true,
+        origenes: {
+          include: {
+            origen:true
+          }
+        }
+      },
+      skip: startIndex,
+      take: pageSize,
+    })
+
+    const result = mapOrigenes(variedades)
+    sendResult(res, result)
+
+  } catch(error){
+    next(error)
+  }
 }
 
 
 module.exports = {
   getAllVariedades,
-  getVariedadByID
+  getVariedadByID,
   getVariedadesByTostaduria,
+  getVariedadesByOrigen
 }
