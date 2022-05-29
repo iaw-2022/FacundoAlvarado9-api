@@ -9,6 +9,17 @@ const prisma = new PrismaClient({
 const sendResult = require('../utils/response/resultsSender')
 const paginationHelper = require('../utils/query/paginationHelper')
 
+const includes = {
+  include: {
+    tostaduria: true,
+    tipo: true,
+    origenes: {
+      include: {
+        origen:true
+      }
+    }
+  }
+}
 
 /**
   Los queries de Prisma para relaciones many-to-many (en este caso variedad-origenes)
@@ -22,20 +33,73 @@ function mapOrigenes(variedades) {
   return result
 }
 
+function getSearchStringPrismaQuery(searchString){
+  return searchString ? {
+    OR: [
+      { nombre: { contains: searchString, mode: 'insensitive' } },
+      { descripcion: { contains: searchString, mode: 'insensitive' } },
+    ]
+  } : {}
+}
+
+function filterByOrigenPrismaQuery(origen){
+  return origen ? {
+        origenes: {
+          some:{
+            origen: {
+              nombre: {
+                contains: origen,
+                mode: 'insensitive'
+              }
+            }
+          }
+        }
+  } : {}
+}
+
+function filterByTostaduriaPrismaQuery(tostaduria){
+  return tostaduria ? {
+    tostaduria: {
+      nombre: {
+        contains: tostaduria,
+        mode: 'insensitive'
+      }
+    }
+  } : {}
+}
+
+function filterByTipoPrismaQuery(tipo){
+  return tipo ? {
+    tipo: {
+      nombre: {
+        contains: tipo,
+        mode: 'insensitive'
+      }
+    }
+  } : {}
+}
+
 const getAllVariedades = async (req, res, next) => {
+
   const pageSize = paginationHelper.getPageSize(req, next)
   const startIndex = paginationHelper.getStartIndex(req, next)
 
+  const {searchString, origen, tostaduria, tipo} = req.query
+
+  const searchStringPrismaQuery = getSearchStringPrismaQuery(searchString)
+  const origenPrismaQuery = filterByOrigenPrismaQuery(origen)
+  const tostaduriaPrismaQuery = filterByTostaduriaPrismaQuery(tostaduria)
+  const tipoPrismaQuery = filterByTipoPrismaQuery(tipo)
+
   try{
       const variedades = await prisma.variedades.findMany({
-        include: {
-          tipo: true,
-          origenes: {
-            include: {
-              origen:true
-            }
-          }
+        where:{
+          ...searchStringPrismaQuery,
+          ...origenPrismaQuery,
+          ...tostaduriaPrismaQuery,
+          ...tipoPrismaQuery,
         },
+        ...includes,
         skip: startIndex,
         take: pageSize,
       })
@@ -54,14 +118,7 @@ const getVariedadByID = async (req, res, next) =>{
     where: {
       id: Number(id)
     },
-    include: {
-      tipo: true,
-      origenes: {
-        include: {
-          origen:true
-        }
-      }
-    }
+    ...includes
   })
 
   result = mapOrigenes(variedad)
@@ -72,10 +129,14 @@ const getVariedadByID = async (req, res, next) =>{
 const getVariedadesByTostaduria = async (req, res, next) =>{
   const tost_id = req.params.id
 
-  const nombre = req.query.nombre || ""
-  
   const pageSize = paginationHelper.getPageSize(req, next)
   const startIndex = paginationHelper.getStartIndex(req, next)
+
+  const {searchString, origen, tipo} = req.query
+
+  const searchStringPrismaQuery = getSearchStringPrismaQuery(searchString)
+  const origenPrismaQuery = filterByOrigenPrismaQuery(origen)
+  const tipoPrismaQuery = filterByTipoPrismaQuery(tipo)
 
   try{
     const variedades = await prisma.variedades.findMany({
@@ -83,19 +144,11 @@ const getVariedadesByTostaduria = async (req, res, next) =>{
         tostaduria: {
           id: Number(tost_id)
         },
-        nombre: {
-          startsWith: String(nombre),
-          mode: 'insensitive'
-        },
+        ...searchStringPrismaQuery,
+        ...origenPrismaQuery,
+        ...tipoPrismaQuery
       },
-      include: {
-        tipo: true,
-        origenes: {
-          include: {
-            origen:true
-          }
-        }
-      },
+      ...includes,
       skip: startIndex,
       take: pageSize,
     })
@@ -115,17 +168,25 @@ const getVariedadesByOrigen = async (req, res, next) =>{
   const pageSize = paginationHelper.getPageSize(req, next)
   const startIndex = paginationHelper.getStartIndex(req, next)
 
+  const {searchString, tostaduria, tipo} = req.query
+
+  const searchStringPrismaQuery = getSearchStringPrismaQuery(searchString)
+  const tostaduriaPrismaQuery = filterByTostaduriaPrismaQuery(tostaduria)
+  const tipoPrismaQuery = filterByTipoPrismaQuery(tipo)
+
   try{
     const variedades = await prisma.variedades.findMany({
-      where: { origenes: { some: { id: Number(origen_id) } } },
-      include: {
-        tipo: true,
+      where: {
         origenes: {
-          include: {
-            origen:true
+          some: {
+            origen_id: Number(origen_id)
           }
-        }
+        },
+        ...searchStringPrismaQuery,
+        ...tostaduriaPrismaQuery,
+        ...tipoPrismaQuery
       },
+      ...includes,
       skip: startIndex,
       take: pageSize,
     })
