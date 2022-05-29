@@ -7,7 +7,6 @@ const prisma = new PrismaClient()
 const sendResult = require('../utils/response/resultsSender')
 const paginationHelper = require('../utils/query/paginationHelper')
 
-
 const getAllCiudades = async (req, res, next) => {
   const pageSize = paginationHelper.getPageSize(req, next)
   const startIndex = paginationHelper.getStartIndex(req, next)
