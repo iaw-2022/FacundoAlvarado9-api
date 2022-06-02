@@ -22,11 +22,16 @@ const getSucursalesByCiudad = async (req, res, next) =>{
         ciudad_cp: Number(cod_postal)
       },
       include: {
-        tostaduria: true,
+        tostaduria: true, //Se incluye la tostaduria en forma anidada
       },
       skip: startIndex,
       take: pageSize,
     })
+
+    //Se elimina el id de la tostaduria de la respuesta (redundante)
+    sucursales.forEach((sucursal) => {
+      delete sucursal.tostaduria_id
+    });
 
     sendResult(res, sucursales)
 
@@ -45,11 +50,17 @@ const getSucursalesByTostaduria = async (req, res, next) =>{
     const sucursales = await prisma.sucursales.findMany({
       where: { tostaduria: { id: Number(tost_id) } },
       include: {
-        ciudad: true,
+        ciudad: true, //Se incluye la ciudad en forma anidada
       },
       skip: startIndex,
       take: pageSize,
     })
+
+    //Se elimina el cod_postal de la ciudad de la respuesta (redundante)
+    sucursales.forEach((sucursal) => {
+      delete sucursal.ciudad_cp
+    });
+
 
     sendResult(res, sucursales)
 
