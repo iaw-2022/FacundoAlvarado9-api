@@ -20,9 +20,9 @@ app.use('/tostadurias', tostaduriasRoute)
 app.use('/origenes', origenesRoute)
 
 app.listen(
-    PORT,
+    process.env.PORT || PORT,
     () => {
-        console.log('Escuchando en puerto 8080 🚀')
+        console.log('Escuchando en puerto ' + (process.env.PORT || PORT) + ' 🚀')
     })
 
 app.get('/', (req, res)=>{
