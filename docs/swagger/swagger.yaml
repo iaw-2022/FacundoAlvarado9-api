@@ -1,0 +1,473 @@
+openapi: 3.0.0
+info:
+  title: Cafeando API
+  description: API for the Cafeando repository of specialty coffee in Argentina
+  version: 1.0.0
+servers:
+  - url: http://api.cafeandocomo.ninja
+    description: Live production API
+  - url: http://127.0.0.1:8080/
+    description: Local development server
+
+paths:
+  /variedades:
+    get:
+      summary: Returns the list of varieties.
+      parameters:
+        - $ref: '#/components/parameters/pageSizeParam'
+        - $ref: '#/components/parameters/startIndexParam'
+        - $ref: '#/components/parameters/searchStringParam'
+        - $ref: '#/components/parameters/origenParam'
+        - $ref: '#/components/parameters/tostaduriaParam'
+        - $ref: '#/components/parameters/tipoParam'
+      responses:
+        '200':
+          description: A collection of coffee varieties.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionOfVariedades'
+        default:
+          description: Unexpected error
+
+  /variedades/{id}:
+    get:
+      summary: Returns a coffe variety with the given ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the coffee variety to return.
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        '200':
+          description: A collection with: a single coffee variety, if the variety exists. Or none, if otherwise.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionOfVariedades'
+        default:
+          description: Unexpected error
+
+  /tostadurias:
+    get:
+      summary: Returns the list of roasteries.
+      parameters:
+        - $ref: '#/components/parameters/pageSizeParam'
+        - $ref: '#/components/parameters/startIndexParam'
+        - $ref: '#/components/parameters/searchStringParam'
+      responses:
+        '200':
+          description: A collection of roasteries.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionOfTostadurias'
+        default:
+          description: Unexpected error
+
+  /tostadurias/{id}:
+    get:
+      summary: Returns the roastery with the given id.
+      parameters:
+        - $ref: '#/components/parameters/tostaduriaIDParam'
+      responses:
+        '200':
+          description: A collection with: a single roastery, if the roastery exists. Or empty, if otherwise.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionOfTostadurias'
+        default:
+          description: Unexpected error
+
+  /tostadurias/{id}/sucursales:
+    get:
+      summary: Returns the stores of a given city.
+      parameters:
+        - $ref: '#/components/parameters/tostaduriaIDParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - $ref: '#/components/parameters/startIndexParam'
+      responses:
+        '200':
+          description: A collection with: the stores of the given roastery, if the roastery exists. Or empty, if otherwise.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionOfSucursales'
+        default:
+          description: Unexpected error
+
+  /tostadurias/{id}/variedades:
+   get:
+     summary: Returns the varieties from a given roastery.
+     parameters:
+       - $ref: '#/components/parameters/tostaduriaIDParam'
+       - $ref: '#/components/parameters/pageSizeParam'
+       - $ref: '#/components/parameters/startIndexParam'
+       - $ref: '#/components/parameters/origenParam'
+       - $ref: '#/components/parameters/tipoParam'
+     responses:
+       '200':
+         description: A collection with: the varieties of the given roastery, if the roastery exists. Or empty, if otherwise.
+         content:
+           application/json:
+             schema:
+               $ref: '#/components/schemas/CollectionOfVariedades'
+       default:
+         description: Unexpected error
+
+  /ciudades:
+    get:
+      summary: Returns the list of cities.
+      parameters:
+        - $ref: '#/components/parameters/pageSizeParam'
+        - $ref: '#/components/parameters/startIndexParam'
+        - $ref: '#/components/parameters/searchStringParam'
+      responses:
+        '200':
+          description: A collection of cities.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionOfCiudades'
+        default:
+          description: Unexpected error
+
+  /ciudades/{cod_postal}:
+    get:
+      summary: Returns a city with the given postal code.
+      parameters:
+        - $ref: '#/components/parameters/codPostalParam'
+      responses:
+        '200':
+          description: A collection with: a single city, if the city exists. Or none, if otherwise.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionOfCiudades'
+        default:
+          description: Unexpected error
+
+  /ciudades/{cod_postal}/sucursales:
+    get:
+      summary: Returns the stores of a given city.
+      parameters:
+        - $ref: '#/components/parameters/codPostalParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - $ref: '#/components/parameters/startIndexParam'
+      responses:
+        '200':
+          description: A collection with: the stores of the given city, if the city exists. Or empty, if otherwise.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionOfSucursales'
+        default:
+          description: Unexpected error
+
+  /origenes:
+    get:
+      summary: Returns the list of origins.
+      parameters:
+        - $ref: '#/components/parameters/pageSizeParam'
+        - $ref: '#/components/parameters/startIndexParam'
+        - $ref: '#/components/parameters/searchStringParam'
+      responses:
+        '200':
+          description: A collection of origins.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionOfOrigenes'
+        default:
+          description: Unexpected error
+
+  /origenes/{id}/variedades:
+   get:
+     summary: Returns the varieties from (or for blends: that contains) a given origin.
+     parameters:
+       - $ref: '#/components/parameters/origenIDParam'
+       - $ref: '#/components/parameters/pageSizeParam'
+       - $ref: '#/components/parameters/startIndexParam'
+       - $ref: '#/components/parameters/tostaduriaParam'
+       - $ref: '#/components/parameters/tipoParam'
+     responses:
+       '200':
+         description: A collection with: the varieties of the given origin, if the origin exists. Or empty, if otherwise.
+         content:
+           application/json:
+             schema:
+               $ref: '#/components/schemas/CollectionOfVariedades'
+       default:
+         description: Unexpected error
+
+components:
+  schemas:
+
+    Tipo:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2
+        nombre:
+          type: string
+          example: Blend
+
+    Tostaduria:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 4
+        nombre:
+          type: string
+          example: Capitanes Coffee Co.
+
+    Origen:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        nombre:
+          type: string
+          example: Brasil
+        descripcion:
+          type: string
+          example: Grandes cafeteros los brasileños
+
+    Variedad:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2
+        name:
+          type: string
+          example: Strong Coffee Blend
+        descripcion:
+          type: string
+          example: Toda la energía que necesitas para tu entrenamiento.
+        url:
+          type: string
+          example: https://capitanescoffeeco.mitiendanube.com/productos/strong-coffee-blend/?variant=340546934
+        imagen_url:
+          type: string
+          example: https://i.imgur.com/2D1Z5a5.jpg
+        published_at:
+          type: string
+          example: 2022-05-31T15:59:26.000Z
+        tostaduria:
+          $ref: '#/components/schemas/Tostaduria'
+        tipo:
+          $ref: '#/components/schemas/Tipo'
+        origenes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Origen'
+
+    Ciudad:
+      type: object
+      properties:
+        cod_postal:
+          type: integer
+          example: 8000
+        nombre:
+          type: string
+          example: Bahía Blanca
+
+    Sucursal:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 4
+        direccion:
+          type: string
+          example: Gorriti 365
+        tostaduria_id:
+          type: integer
+          example: 1
+        ciudad_cp:
+          type: integer
+          example: 8000
+        tostaduria:
+          $ref: '#/components/schemas/Tostaduria'
+
+    ArrayOfOrigenes:
+      type: array
+      items:
+        $ref: '#/components/schemas/Origen'
+
+    CollectionOfOrigenes:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 1
+        results:
+          $ref: '#/components/schemas/ArrayOfOrigenes'
+
+    ArrayOfSucursales:
+      type: array
+      items:
+        $ref: '#/components/schemas/Sucursal'
+
+    CollectionOfSucursales:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int64
+          example: 1
+        results:
+          $ref: '#/components/schemas/ArrayOfSucursales'
+
+    ArrayOfTostadurias:
+      type: array
+      items:
+        $ref: '#/components/schemas/Tostaduria'
+
+    CollectionOfTostadurias:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 1
+        results:
+          $ref: '#/components/schemas/ArrayOfTostadurias'
+
+    ArrayOfCiudades:
+      type: array
+      items:
+        $ref: '#/components/schemas/Ciudad'
+
+    CollectionOfCiudades:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int64
+          example: 1
+        results:
+          $ref: '#/components/schemas/ArrayOfCiudades'
+
+    ArrayOfVariedades:
+      type: array
+      items:
+        $ref: '#/components/schemas/Variedad'
+
+    CollectionOfVariedades:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int64
+          example: 1
+        results:
+          $ref: '#/components/schemas/ArrayOfVariedades'
+
+
+
+  parameters:
+    pageSizeParam:
+      in: query
+      name: pageSize
+      schema:
+        type: integer
+        minimum: 0
+        default: 10
+      required: false
+      description: The number of items to return.
+    startIndexParam:
+      in: query
+      name: startIndex
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      required: false
+      description: Number of items to skip before starting to collect the result set
+    searchStringParam:
+      in: query
+      name: searchString
+      schema:
+        type: string
+      required: false
+      description: String to filter either by name or by description (this latter only for variedades)
+    origenParam:
+      in: query
+      name: origen
+      schema:
+        type: string
+      allowEmptyValue: true
+      required: false
+      examples:
+        br:
+          summary: Retrieve all coffee varieties from Brasil
+          value: brasil
+        col:
+          summary: Retrieve all coffee varieties from Colombia
+          value: colombia
+      description: Retrieve coffee varieties from the country given.
+    tostaduriaParam:
+      in: query
+      name: tostaduria
+      schema:
+        type: string
+      allowEmptyValue: true
+      required: false
+      examples:
+        tiger:
+          summary: Retrieve all coffee roasteries from the Coffee Tiger Co roastery.
+          value: coffee tiger
+        co:
+          summary: Retrieve all coffee roasteries that have a "Co" in their name
+          value: co
+      description: Retrieve coffee varieties from the given roastery.
+    tipoParam:
+      in: query
+      name: tipo
+      schema:
+        type: integer
+        enum: [1,2]
+      description: >
+        Tipo:
+
+         * `1` - De Origen (single-origin)
+         * `2` - Blend
+      allowEmptyValue: true
+      required: false
+      description: Retrieve a specific kind of variety (Blend or De Origen).
+    codPostalParam:
+      in: path
+      name: cod_postal
+      required: true
+      description: The postal code of the city to return.
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+    tostaduriaIDParam:
+      name: id
+      in: path
+      required: true
+      description: The ID of a roastery to return.
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+    origenIDParam:
+      name: id
+      in: path
+      required: true
+      description: The ID of an origin.
+      schema:
+        type: integer
+        format: int64
+        minimum: 1

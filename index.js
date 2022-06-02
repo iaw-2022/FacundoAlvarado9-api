@@ -5,6 +5,10 @@ const PORT = 8080
 const { PrismaClient } =  require('@prisma/client')
 const prisma = new PrismaClient()
 
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('./docs/swagger/swagger.yaml');
+
 const ciudadesRoute = require('./routes/ciudades')
 const variedadesRoute = require('./routes/variedades')
 const tostaduriasRoute = require('./routes/tostadurias')
@@ -18,12 +22,14 @@ app.use('/origenes', origenesRoute)
 app.listen(
     PORT,
     () => {
-        console.log('Escuchando en puerto 8080')
+        console.log('Escuchando en puerto 8080 🚀')
     })
 
 app.get('/', (req, res)=>{
     res.send("Primera prueba para la api.")
 })
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use((req, res, next) => {
     const error = new Error('No encontrado')
@@ -41,5 +47,5 @@ app.use((error, req, res, next) =>{
 })
 
 BigInt.prototype.toJSON = function() {
-    return this.toString()
-  }
+     return Number(this)
+}

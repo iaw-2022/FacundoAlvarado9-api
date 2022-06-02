@@ -1,6 +1,6 @@
 const express = require('express')
 
-const PAGE_SIZE_DEFAULT = 5
+const PAGE_SIZE_DEFAULT = 10
 const START_INDEX_DEFAULT = 0
 
 function getPageSize(req, next){
