@@ -49,6 +49,8 @@ function removeDuplicatedRelationshipInfo(variedades){
   });
 }
 
+// Funciones auxiliares para los queries a la DB según query
+
 function getSearchStringPrismaQuery(searchString){
   return searchString ? {
     OR: [
@@ -58,37 +60,29 @@ function getSearchStringPrismaQuery(searchString){
   } : {}
 }
 
-function filterByOrigenPrismaQuery(origen){
-  return origen ? {
-        origenes: {
-          some:{
-            origen: {
-              nombre: {
-                contains: origen,
-                mode: 'insensitive'
-              }
-            }
-          }
-        }
-  } : {}
-}
-
-function filterByTostaduriaPrismaQuery(tostaduria){
-  return tostaduria ? {
-    tostaduria: {
-      nombre: {
-        contains: tostaduria,
-        mode: 'insensitive'
+function filterByOrigenPrismaQuery(origen_id){
+  return origen_id ? {
+    origenes: {
+      some: {
+        origen_id: Number(origen_id)
       }
     }
   } : {}
 }
 
-function filterByTipoPrismaQuery(tipo){
-  return tipo ? {
+function filterByTostaduriaPrismaQuery(tostaduria_id){
+  return tostaduria_id ? {
+    tostaduria: {
+      id: Number(tostaduria_id)
+    }
+  } : {}
+}
+
+function filterByTipoPrismaQuery(tipo_id){
+  return tipo_id ? {
     tipo: {
       is: {
-        id: Number(tipo)
+        id: Number(tipo_id)
       }
     }
   } : {}
