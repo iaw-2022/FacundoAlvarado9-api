@@ -21,6 +21,11 @@ const includes = {
   }
 }
 
+function formatVariedadesResult(variedades){
+  removeDuplicatedRelationshipInfo(variedades)
+  return mapOrigenes(variedades)
+}
+
 /**
   Los queries de Prisma para relaciones many-to-many (en este caso variedad-origenes)
   incluyen información de la relación en sí (ids relacionados, etc), que "ensuciarían"
@@ -31,6 +36,17 @@ function mapOrigenes(variedades) {
     return { ...variedad, origenes: variedad.origenes.map((origen) => origen.origen)}
   })
   return result
+}
+
+/**
+Elimina la información duplicada del id de la tostaduria y el tipo ligados
+Ya se incluyen esas entidades en forma anidada
+**/
+function removeDuplicatedRelationshipInfo(variedades){
+  variedades.forEach((variedad) => {
+    delete variedad.tipo_id
+    delete variedad.tostaduria_id
+  });
 }
 
 function getSearchStringPrismaQuery(searchString){
@@ -71,9 +87,8 @@ function filterByTostaduriaPrismaQuery(tostaduria){
 function filterByTipoPrismaQuery(tipo){
   return tipo ? {
     tipo: {
-      nombre: {
-        contains: tipo,
-        mode: 'insensitive'
+      is: {
+        id: Number(tipo)
       }
     }
   } : {}
@@ -104,7 +119,7 @@ const getAllVariedades = async (req, res, next) => {
         take: pageSize,
       })
 
-      result = mapOrigenes(variedades)
+      result = formatVariedadesResult(variedades)
       sendResult(res, result)
 
   } catch(error){
@@ -116,12 +131,12 @@ const getVariedadByID = async (req, res, next) =>{
   const {id} = req.params.id
   const variedad = await prisma.variedades.findMany({
     where: {
-      id: Number(id)
+      id: id
     },
     ...includes
   })
 
-  result = mapOrigenes(variedad)
+  result = formatVariedadesResult(variedad)
   sendResult(res, result)
 
 }
@@ -154,7 +169,7 @@ const getVariedadesByTostaduria = async (req, res, next) =>{
     })
 
 
-    result = mapOrigenes(variedades)
+    result = formatVariedadesResult(variedades)
     sendResult(res, result)
 
   } catch(error){
@@ -191,7 +206,7 @@ const getVariedadesByOrigen = async (req, res, next) =>{
       take: pageSize,
     })
 
-    const result = mapOrigenes(variedades)
+    const result = formatVariedadesResult(variedades)
     sendResult(res, result)
 
   } catch(error){
