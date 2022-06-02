@@ -4,7 +4,7 @@ info:
   description: API for the Cafeando repository of specialty coffee in Argentina
   version: 1.0.0
 servers:
-  - url: http://api.cafeandocomo.ninja
+  - url: http://cafeando-api.herokuapp.com
     description: Live production API
   - url: http://127.0.0.1:8080/
     description: Local development server
