@@ -31,8 +31,8 @@ const getSucursalesByCiudad = async (req, res, next) =>{
     //Se elimina el id de la tostaduria de la respuesta (redundante)
     sucursales.forEach((sucursal) => {
       delete sucursal.tostaduria_id
+      delete sucursal.ciudad_cp
     });
-
     sendResult(res, sucursales)
 
   } catch(error){
@@ -58,10 +58,9 @@ const getSucursalesByTostaduria = async (req, res, next) =>{
 
     //Se elimina el cod_postal de la ciudad de la respuesta (redundante)
     sucursales.forEach((sucursal) => {
+      delete sucursal.tostaduria_id
       delete sucursal.ciudad_cp
     });
-
-
     sendResult(res, sucursales)
 
   } catch(error){
