@@ -6,7 +6,7 @@ info:
 servers:
   - url: https://cafeando-api.herokuapp.com
     description: Live production API
-  - url: http://127.0.0.1:8080/
+  - url: http://127.0.0.1:3000/
     description: Local development server
 
 paths:
@@ -37,6 +37,7 @@ paths:
         - name: id
           in: path
           required: true
+          example: 1
           description: The ID of the coffee variety to return.
           schema:
             type: integer
@@ -97,7 +98,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CollectionOfSucursales'
+                $ref: '#/components/schemas/CollectionOfSucursalesConCiudad'
         default:
           description: Unexpected error
 
@@ -165,7 +166,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CollectionOfSucursales'
+                $ref: '#/components/schemas/CollectionOfSucursalesConTostaduria'
         default:
           description: Unexpected error
 
@@ -223,7 +224,7 @@ components:
       properties:
         id:
           type: integer
-          example: 4
+          example: 1
         nombre:
           type: string
           example: Capitanes Coffee Co.
@@ -281,7 +282,8 @@ components:
           type: string
           example: Bahía Blanca
 
-    Sucursal:
+    SucursalConTostaduria:
+      title: Sucursal
       type: object
       properties:
         id:
@@ -290,14 +292,21 @@ components:
         direccion:
           type: string
           example: Gorriti 365
-        tostaduria_id:
-          type: integer
-          example: 1
-        ciudad_cp:
-          type: integer
-          example: 8000
         tostaduria:
           $ref: '#/components/schemas/Tostaduria'
+
+    SucursalConCiudad:
+      title: Sucursal
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 4
+        direccion:
+          type: string
+          example: Gorriti 365
+        ciudad:
+          $ref: '#/components/schemas/Ciudad'
 
     ArrayOfOrigenes:
       type: array
@@ -313,12 +322,20 @@ components:
         results:
           $ref: '#/components/schemas/ArrayOfOrigenes'
 
-    ArrayOfSucursales:
+    ArrayOfSucursalesConCiudad:
+      title: ArrayOfSucursales
       type: array
       items:
-        $ref: '#/components/schemas/Sucursal'
+        $ref: '#/components/schemas/SucursalConCiudad'
 
-    CollectionOfSucursales:
+    ArrayOfSucursalesConTostaduria:
+      title: ArrayOfSucursales
+      type: array
+      items:
+        $ref: '#/components/schemas/SucursalConTostaduria'
+
+    CollectionOfSucursalesConCiudad:
+      title: CollectionOfSucursales
       type: object
       properties:
         count:
@@ -326,7 +343,18 @@ components:
           format: int64
           example: 1
         results:
-          $ref: '#/components/schemas/ArrayOfSucursales'
+          $ref: '#/components/schemas/ArrayOfSucursalesConCiudad'
+
+    CollectionOfSucursalesConTostaduria:
+     title: CollectionOfSucursales
+     type: object
+     properties:
+       count:
+         type: integer
+         format: int64
+         example: 1
+       results:
+         $ref: '#/components/schemas/ArrayOfSucursalesConTostaduria'
 
     ArrayOfTostadurias:
       type: array
@@ -404,31 +432,31 @@ components:
       in: query
       name: origen
       schema:
-        type: string
+        type: integer
       allowEmptyValue: true
       required: false
       examples:
         br:
           summary: Retrieve all coffee varieties from Brasil
-          value: brasil
+          value: 1
         col:
           summary: Retrieve all coffee varieties from Colombia
-          value: colombia
+          value: 2
       description: Retrieve coffee varieties from the country given.
     tostaduriaParam:
       in: query
       name: tostaduria
       schema:
-        type: string
+        type: integer
       allowEmptyValue: true
       required: false
       examples:
         tiger:
-          summary: Retrieve all coffee roasteries from the Coffee Tiger Co roastery.
-          value: coffee tiger
-        co:
-          summary: Retrieve all coffee roasteries that have a "Co" in their name
-          value: co
+          summary: Retrieve all coffee varieties from the Coffee Tiger Co roastery.
+          value: 1
+        euro:
+          summary: Retrieve all coffee varieties from the Eurocafé roastery
+          value: 2
       description: Retrieve coffee varieties from the given roastery.
     tipoParam:
       in: query
@@ -448,6 +476,7 @@ components:
       in: path
       name: cod_postal
       required: true
+      example: 8000
       description: The postal code of the city to return.
       schema:
         type: integer
@@ -457,6 +486,7 @@ components:
       name: id
       in: path
       required: true
+      example: 2
       description: The ID of a roastery to return.
       schema:
         type: integer
@@ -466,6 +496,7 @@ components:
       name: id
       in: path
       required: true
+      example: 1
       description: The ID of an origin.
       schema:
         type: integer
