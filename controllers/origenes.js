@@ -8,6 +8,7 @@ const prisma = new PrismaClient({
 
 const sendResult = require('../utils/response/resultsSender')
 const paginationHelper = require('../utils/query/paginationHelper')
+const validateIDParam = require('../utils/validateIDParam')
 
 function getSearchStringPrismaQuery(searchString){
   return searchString ? {
@@ -27,7 +28,7 @@ const getAllOrigenes = async (req, res, next) => {
   try{
       const origenes = await prisma.origenes.findMany({
         where:{
-          ...searchStringPrismaQuery,          
+          ...searchStringPrismaQuery,
         },
         skip: startIndex,
         take: pageSize,
@@ -40,13 +41,19 @@ const getAllOrigenes = async (req, res, next) => {
 
 const getOrigenByID = async (req, res, next) =>{
   const {id} = req.params
-  const origen = await prisma.origenes.findMany({
-    where: {
-      id: Number(id)
-    },
-  })
 
-  sendResult(res, origen)
+  try{
+    const origen = await prisma.origenes.findMany({
+      where: {
+        id: validateIDParam(id)
+      },
+    })
+
+    sendResult(res, origen)
+  } catch(error){
+    next(error)
+  }
+
 }
 
 module.exports = {

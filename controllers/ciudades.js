@@ -6,6 +6,7 @@ const prisma = new PrismaClient()
 
 const sendResult = require('../utils/response/resultsSender')
 const paginationHelper = require('../utils/query/paginationHelper')
+const validateIDParam = require('../utils/validateIDParam')
 
 const getAllCiudades = async (req, res, next) => {
   const pageSize = paginationHelper.getPageSize(req, next)
@@ -24,13 +25,18 @@ const getAllCiudades = async (req, res, next) => {
 
 const getCiudadByCP = async (req, res, next) =>{
   const {cod_postal} = req.params
-  const ciudad = await prisma.ciudades.findMany({
-    where: {
-      cod_postal: Number(cod_postal)
-    },
-  })
 
-  sendResult(res, ciudad)
+  try{
+    const ciudad = await prisma.ciudades.findMany({
+      where: {
+        cod_postal: validateIDParam(cod_postal)
+      },
+    })
+
+    sendResult(res, ciudad)
+  } catch(error){
+    next(error)
+  }
 }
 
 

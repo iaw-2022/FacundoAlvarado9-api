@@ -7,6 +7,7 @@ const prisma = new PrismaClient({
 })
 
 const sendResult = require('../utils/response/resultsSender')
+const validateIDParam = require('../utils/validateIDParam')
 const paginationHelper = require('../utils/query/paginationHelper')
 
 const includes = {
@@ -64,7 +65,7 @@ function filterByOrigenPrismaQuery(origen_id){
   return origen_id ? {
     origenes: {
       some: {
-        origen_id: Number(origen_id)
+        origen_id: validateIDParam(origen_id)
       }
     }
   } : {}
@@ -73,7 +74,7 @@ function filterByOrigenPrismaQuery(origen_id){
 function filterByTostaduriaPrismaQuery(tostaduria_id){
   return tostaduria_id ? {
     tostaduria: {
-      id: Number(tostaduria_id)
+      id: validateIDParam(tostaduria_id)
     }
   } : {}
 }
@@ -82,7 +83,7 @@ function filterByTipoPrismaQuery(tipo_id){
   return tipo_id ? {
     tipo: {
       is: {
-        id: Number(tipo_id)
+        id: validateIDParam(tipo_id)
       }
     }
   } : {}
@@ -95,18 +96,13 @@ const getAllVariedades = async (req, res, next) => {
 
   const {searchString, origen, tostaduria, tipo} = req.query
 
-  const searchStringPrismaQuery = getSearchStringPrismaQuery(searchString)
-  const origenPrismaQuery = filterByOrigenPrismaQuery(origen)
-  const tostaduriaPrismaQuery = filterByTostaduriaPrismaQuery(tostaduria)
-  const tipoPrismaQuery = filterByTipoPrismaQuery(tipo)
-
   try{
       const variedades = await prisma.variedades.findMany({
         where:{
-          ...searchStringPrismaQuery,
-          ...origenPrismaQuery,
-          ...tostaduriaPrismaQuery,
-          ...tipoPrismaQuery,
+          ...getSearchStringPrismaQuery(searchString),
+          ...filterByOrigenPrismaQuery(origen),
+          ...filterByTostaduriaPrismaQuery(tostaduria),
+          ...filterByTipoPrismaQuery(tipo),
         },
         ...includes,
         skip: startIndex,
@@ -122,17 +118,23 @@ const getAllVariedades = async (req, res, next) => {
 }
 
 const getVariedadByID = async (req, res, next) =>{
-  const {id} = req.params.id
-  const variedad = await prisma.variedades.findMany({
-    where: {
-      id: id
-    },
-    ...includes
-  })
+  const id = req.params.id
+  console.log(req.params.id + ' ' + id)
 
-  result = formatVariedadesResult(variedad)
-  sendResult(res, result)
+  try{
+    const variedad = await prisma.variedades.findMany({
+      where: {
+        id: validateIDParam(id)
+      },
+      ...includes
+    })
 
+    result = formatVariedadesResult(variedad)
+    sendResult(res, result)
+
+  } catch(error) {
+    next(error)
+  }
 }
 
 const getVariedadesByTostaduria = async (req, res, next) =>{
@@ -143,19 +145,15 @@ const getVariedadesByTostaduria = async (req, res, next) =>{
 
   const {searchString, origen, tipo} = req.query
 
-  const searchStringPrismaQuery = getSearchStringPrismaQuery(searchString)
-  const origenPrismaQuery = filterByOrigenPrismaQuery(origen)
-  const tipoPrismaQuery = filterByTipoPrismaQuery(tipo)
-
   try{
     const variedades = await prisma.variedades.findMany({
       where: {
         tostaduria: {
-          id: Number(tost_id)
+          id: validateIDParam(tost_id)
         },
-        ...searchStringPrismaQuery,
-        ...origenPrismaQuery,
-        ...tipoPrismaQuery
+        ...getSearchStringPrismaQuery(searchString),
+        ...filterByOrigenPrismaQuery(origen),
+        ...filterByTipoPrismaQuery(tipo)
       },
       ...includes,
       skip: startIndex,
@@ -179,21 +177,17 @@ const getVariedadesByOrigen = async (req, res, next) =>{
 
   const {searchString, tostaduria, tipo} = req.query
 
-  const searchStringPrismaQuery = getSearchStringPrismaQuery(searchString)
-  const tostaduriaPrismaQuery = filterByTostaduriaPrismaQuery(tostaduria)
-  const tipoPrismaQuery = filterByTipoPrismaQuery(tipo)
-
   try{
     const variedades = await prisma.variedades.findMany({
       where: {
         origenes: {
           some: {
-            origen_id: Number(origen_id)
+            origen_id: validateIDParam(origen_id)
           }
         },
-        ...searchStringPrismaQuery,
-        ...tostaduriaPrismaQuery,
-        ...tipoPrismaQuery
+        ...getSearchStringPrismaQuery(searchString),
+        ...filterByTostaduriaPrismaQuery(tostaduria),
+        ...filterByTipoPrismaQuery(tipo)
       },
       ...includes,
       skip: startIndex,

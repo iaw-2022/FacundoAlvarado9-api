@@ -8,6 +8,7 @@ const prisma = new PrismaClient({
 
 const sendResult = require('../utils/response/resultsSender')
 const paginationHelper = require('../utils/query/paginationHelper')
+const validateIDParam = require('../utils/validateIDParam')
 
 
 const getSucursalesByCiudad = async (req, res, next) =>{
@@ -19,7 +20,7 @@ const getSucursalesByCiudad = async (req, res, next) =>{
   try{
     const sucursales = await prisma.sucursales.findMany({
       where: {
-        ciudad_cp: Number(cod_postal)
+        ciudad_cp: validateIDParam(cod_postal)
       },
       include: {
         tostaduria: true, //Se incluye la tostaduria en forma anidada
@@ -48,7 +49,7 @@ const getSucursalesByTostaduria = async (req, res, next) =>{
 
   try{
     const sucursales = await prisma.sucursales.findMany({
-      where: { tostaduria: { id: Number(tost_id) } },
+      where: { tostaduria: { id: validateIDParam(tost_id) } },
       include: {
         ciudad: true, //Se incluye la ciudad en forma anidada
       },

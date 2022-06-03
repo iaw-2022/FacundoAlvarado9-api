@@ -8,6 +8,7 @@ const prisma = new PrismaClient({
 
 const sendResult = require('../utils/response/resultsSender')
 const paginationHelper = require('../utils/query/paginationHelper')
+const validateIDParam = require('../utils/validateIDParam')
 
 function getSearchStringPrismaQuery(searchString){
   return searchString ? {
@@ -22,12 +23,11 @@ const getAllTostadurias = async (req, res, next) => {
   const startIndex = paginationHelper.getStartIndex(req, next)
 
   const searchString = req.query.searchString
-  const searchStringPrismaQuery = getSearchStringPrismaQuery(searchString)
 
   try{
       const tostadurias = await prisma.tostadurias.findMany({
         where: {
-          ...searchStringPrismaQuery,          
+          ...getSearchStringPrismaQuery(searchString),
         },
         skip: startIndex,
         take: pageSize,
@@ -40,13 +40,19 @@ const getAllTostadurias = async (req, res, next) => {
 
 const getTostaduriaByID = async (req, res, next) =>{
   const {id} = req.params
-  const tostaduria = await prisma.tostadurias.findMany({
-    where: {
-      id: Number(id)
-    },
-  })
 
-  sendResult(res, tostaduria)
+  try{
+    const tostaduria = await prisma.tostadurias.findMany({
+      where: {
+        id: validateIDParam(id)
+      },
+    })
+
+    sendResult(res, tostaduria)
+  } catch(error){
+    next(error)
+  }
+
 }
 
 
