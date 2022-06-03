@@ -27,7 +27,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CollectionOfVariedades'
-        default:
+        '400':
+           description: One or more of the parameters is either not an ID or less than 0.
+        '5XX':
           description: Unexpected error
 
   /variedades/{id}:
@@ -50,7 +52,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CollectionOfVariedades'
-        default:
+        '400':
+           description: One or more of the parameters is either not an ID or less than 0.
+        '5XX':
           description: Unexpected error
 
   /tostadurias:
@@ -67,7 +71,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CollectionOfTostadurias'
-        default:
+        '400':
+           description: One or more of the parameters is either not an ID or less than 0.
+        '5XX':
           description: Unexpected error
 
   /tostadurias/{id}:
@@ -82,7 +88,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CollectionOfTostadurias'
-        default:
+        '400':
+           description: One or more of the parameters is either not an ID or less than 0.
+        '5XX':
           description: Unexpected error
 
   /tostadurias/{id}/sucursales:
@@ -99,7 +107,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CollectionOfSucursalesConCiudad'
-        default:
+        '400':
+           description: One or more of the parameters is either not an ID or less than 0.
+        '5XX':
           description: Unexpected error
 
   /tostadurias/{id}/variedades:
@@ -118,7 +128,9 @@ paths:
            application/json:
              schema:
                $ref: '#/components/schemas/CollectionOfVariedades'
-       default:
+       '400':
+          description: One or more of the parameters is either not an ID or less than 0.
+       '5XX':
          description: Unexpected error
 
   /ciudades:
@@ -150,7 +162,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CollectionOfCiudades'
-        default:
+        '400':
+           description: One or more of the parameters is either not an ID or less than 0.
+        '5XX':
           description: Unexpected error
 
   /ciudades/{cod_postal}/sucursales:
@@ -203,7 +217,9 @@ paths:
            application/json:
              schema:
                $ref: '#/components/schemas/CollectionOfVariedades'
-       default:
+       '400':
+          description: One or more of the parameters is either not an ID or less than 0.
+       '5XX':
          description: Unexpected error
 
 components:
