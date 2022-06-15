@@ -1,9 +1,10 @@
 {
-  "name": "nodejs-api-test",
+  "name": "api-cafeando",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "dev": "npx nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,7 +14,10 @@
   "dependencies": {
     "@prisma/client": "^3.14.0",
     "express": "^4.18.1",
-    "http-errors": "^2.0.0"
+    "express-rate-limit": "^6.4.0",
+    "http-errors": "^2.0.0",
+    "swagger-ui-express": "^4.4.0",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.16",
