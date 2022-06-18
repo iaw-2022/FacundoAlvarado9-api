@@ -25,6 +25,7 @@ const ciudadesRoute = require('./routes/ciudades')
 const variedadesRoute = require('./routes/variedades')
 const tostaduriasRoute = require('./routes/tostadurias')
 const origenesRoute = require('./routes/origenes')
+const tiposRoute = require('./routes/tipos')
 
 app.use(limiter)
 
@@ -32,6 +33,7 @@ app.use('/ciudades', ciudadesRoute)
 app.use('/variedades', variedadesRoute)
 app.use('/tostadurias', tostaduriasRoute)
 app.use('/origenes', origenesRoute)
+app.use('/tipos', tiposRoute)
 
 
 app.listen(
