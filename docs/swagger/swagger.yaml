@@ -6,7 +6,7 @@ info:
 servers:
   - url: https://cafeando-api.herokuapp.com
     description: Live production API
-  - url: http://127.0.0.1:3000/
+  - url: http://127.0.0.1:8000/
     description: Local development server
 
 paths:
@@ -334,6 +334,10 @@ components:
         count:
           type: integer
           example: 1
+        totalCount:
+          type: integer
+          format: int64
+          example: 10
         results:
           $ref: '#/components/schemas/ArrayOfOrigenes'
 
@@ -357,6 +361,10 @@ components:
           type: integer
           format: int64
           example: 1
+        totalCount:
+          type: integer
+          format: int64
+          example: 10
         results:
           $ref: '#/components/schemas/ArrayOfSucursalesConCiudad'
 
@@ -368,6 +376,10 @@ components:
          type: integer
          format: int64
          example: 1
+       totalCount:
+         type: integer
+         format: int64
+         example: 10
        results:
          $ref: '#/components/schemas/ArrayOfSucursalesConTostaduria'
 
@@ -382,6 +394,10 @@ components:
         count:
           type: integer
           example: 1
+        totalCount:
+          type: integer
+          format: int64
+          example: 10
         results:
           $ref: '#/components/schemas/ArrayOfTostadurias'
 
@@ -397,6 +413,10 @@ components:
           type: integer
           format: int64
           example: 1
+        totalCount:
+          type: integer
+          format: int64
+          example: 10
         results:
           $ref: '#/components/schemas/ArrayOfCiudades'
 
@@ -412,6 +432,10 @@ components:
           type: integer
           format: int64
           example: 1
+        totalCount:
+          type: integer
+          format: int64
+          example: 10
         results:
           $ref: '#/components/schemas/ArrayOfVariedades'
 

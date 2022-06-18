@@ -95,22 +95,27 @@ const getAllVariedades = async (req, res, next) => {
   const startIndex = paginationHelper.getStartIndex(req, next)
 
   const {searchString, origen, tostaduria, tipo} = req.query
-
+  
   try{
-      const variedades = await prisma.variedades.findMany({
+      const dbQuery = {
         where:{
           ...getSearchStringPrismaQuery(searchString),
           ...filterByOrigenPrismaQuery(origen),
           ...filterByTostaduriaPrismaQuery(tostaduria),
           ...filterByTipoPrismaQuery(tipo),
-        },
+        }
+      }
+  
+      const totalCount = await prisma.variedades.count(dbQuery)
+      const variedades = await prisma.variedades.findMany({
+        ...dbQuery,
         ...includes,
         skip: startIndex,
         take: pageSize,
       })
 
       result = formatVariedadesResult(variedades)
-      sendResult(res, result)
+      sendResult(res, result, totalCount)
 
   } catch(error){
       next(error)
@@ -118,19 +123,23 @@ const getAllVariedades = async (req, res, next) => {
 }
 
 const getVariedadByID = async (req, res, next) =>{
-  const id = req.params.id
-  console.log(req.params.id + ' ' + id)
+  const id = req.params.id  
 
   try{
-    const variedad = await prisma.variedades.findMany({
+    const dbQuery = {
       where: {
         id: validateIDParam(id)
-      },
+      }
+    }
+
+    const totalCount = await prisma.variedades.count(dbQuery)
+    const variedad = await prisma.variedades.findMany({
+      ...dbQuery,
       ...includes
     })
 
     result = formatVariedadesResult(variedad)
-    sendResult(res, result)
+    sendResult(res, result, totalCount)
 
   } catch(error) {
     next(error)
@@ -146,7 +155,7 @@ const getVariedadesByTostaduria = async (req, res, next) =>{
   const {searchString, origen, tipo} = req.query
 
   try{
-    const variedades = await prisma.variedades.findMany({
+    const dbQuery = {
       where: {
         tostaduria: {
           id: validateIDParam(tost_id)
@@ -154,7 +163,12 @@ const getVariedadesByTostaduria = async (req, res, next) =>{
         ...getSearchStringPrismaQuery(searchString),
         ...filterByOrigenPrismaQuery(origen),
         ...filterByTipoPrismaQuery(tipo)
-      },
+      }
+    }
+
+    const totalCount = await prisma.variedades.count(dbQuery)
+    const variedades = await prisma.variedades.findMany({
+      ...dbQuery,
       ...includes,
       skip: startIndex,
       take: pageSize,
@@ -162,7 +176,7 @@ const getVariedadesByTostaduria = async (req, res, next) =>{
 
 
     result = formatVariedadesResult(variedades)
-    sendResult(res, result)
+    sendResult(res, result, totalCount)
 
   } catch(error){
     next(error)
@@ -178,7 +192,7 @@ const getVariedadesByOrigen = async (req, res, next) =>{
   const {searchString, tostaduria, tipo} = req.query
 
   try{
-    const variedades = await prisma.variedades.findMany({
+    const dbQuery = {
       where: {
         origenes: {
           some: {
@@ -188,14 +202,19 @@ const getVariedadesByOrigen = async (req, res, next) =>{
         ...getSearchStringPrismaQuery(searchString),
         ...filterByTostaduriaPrismaQuery(tostaduria),
         ...filterByTipoPrismaQuery(tipo)
-      },
+      }
+    }
+
+    const totalCount = await prisma.variedades.count(dbQuery)
+    const variedades = await prisma.variedades.findMany({
+      ...dbQuery,
       ...includes,
       skip: startIndex,
       take: pageSize,
     })
 
     const result = formatVariedadesResult(variedades)
-    sendResult(res, result)
+    sendResult(res, result, totalCount)
 
   } catch(error){
     next(error)

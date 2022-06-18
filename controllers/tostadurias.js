@@ -22,33 +22,41 @@ const getAllTostadurias = async (req, res, next) => {
   const pageSize = paginationHelper.getPageSize(req, next)
   const startIndex = paginationHelper.getStartIndex(req, next)
 
-  const searchString = req.query.searchString
+  const searchString = req.query.searchString  
 
   try{
-      const tostadurias = await prisma.tostadurias.findMany({
+      const dbQuery = {
         where: {
-          ...getSearchStringPrismaQuery(searchString),
-        },
+          ...getSearchStringPrismaQuery(searchString)
+        }
+      }
+
+      const totalCount = await prisma.tostadurias.count(dbQuery)
+      const tostadurias = await prisma.tostadurias.findMany({
+        ...dbQuery,
         skip: startIndex,
         take: pageSize,
       })
-      sendResult(res, tostadurias)
+      sendResult(res, tostadurias, totalCount)
   } catch(error){
       next(error)
   }
 }
 
 const getTostaduriaByID = async (req, res, next) =>{
-  const {id} = req.params
+  const {id} = req.params  
 
   try{
-    const tostaduria = await prisma.tostadurias.findMany({
+    const dbQuery = {
       where: {
         id: validateIDParam(id)
-      },
-    })
+      }
+    }
 
-    sendResult(res, tostaduria)
+    const totalCount = await prisma.tostadurias.count(dbQuery)
+    const tostaduria = await prisma.tostadurias.findMany(dbQuery)
+
+    sendResult(res, tostaduria, totalCount)
   } catch(error){
     next(error)
   }

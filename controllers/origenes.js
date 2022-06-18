@@ -25,31 +25,39 @@ const getAllOrigenes = async (req, res, next) => {
   const searchString = req.query.searchString
   const searchStringPrismaQuery = getSearchStringPrismaQuery(searchString)
 
+  const dbQuery = {
+      where:{
+      ...searchStringPrismaQuery,
+    }
+  }
+
   try{
+      const totalCount = await prisma.origenes.count(dbQuery)
       const origenes = await prisma.origenes.findMany({
-        where:{
-          ...searchStringPrismaQuery,
-        },
+        ...dbQuery,
         skip: startIndex,
         take: pageSize,
       })
-      sendResult(res, origenes)
+      sendResult(res, origenes, totalCount)
   } catch(error){
       next(error)
   }
 }
 
 const getOrigenByID = async (req, res, next) =>{
-  const {id} = req.params
+  const {id} = req.params  
 
   try{
-    const origen = await prisma.origenes.findMany({
+    const dbQuery = {
       where: {
         id: validateIDParam(id)
-      },
-    })
+      }
+    }
+    
+    const totalCount = await prisma.origenes.count(dbQuery)
+    const origen = await prisma.origenes.findMany(dbQuery)
 
-    sendResult(res, origen)
+    sendResult(res, origen, totalCount)
   } catch(error){
     next(error)
   }

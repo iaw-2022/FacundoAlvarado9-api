@@ -15,13 +15,18 @@ const getSucursalesByCiudad = async (req, res, next) =>{
   const {cod_postal} = req.params
 
   const pageSize = paginationHelper.getPageSize(req, next)
-  const startIndex = paginationHelper.getStartIndex(req, next)
+  const startIndex = paginationHelper.getStartIndex(req, next)  
 
   try{
-    const sucursales = await prisma.sucursales.findMany({
+    const dbQuery = {
       where: {
         ciudad_cp: validateIDParam(cod_postal)
-      },
+      }
+    }
+
+    const totalCount = await prisma.sucursales.count(dbQuery)
+    const sucursales = await prisma.sucursales.findMany({
+      ...dbQuery,
       include: {
         tostaduria: true, //Se incluye la tostaduria en forma anidada
       },
@@ -34,7 +39,7 @@ const getSucursalesByCiudad = async (req, res, next) =>{
       delete sucursal.tostaduria_id
       delete sucursal.ciudad_cp
     });
-    sendResult(res, sucursales)
+    sendResult(res, sucursales, totalCount)
 
   } catch(error){
     next(error)
@@ -45,11 +50,20 @@ const getSucursalesByTostaduria = async (req, res, next) =>{
   const tost_id = req.params.id
 
   const pageSize = paginationHelper.getPageSize(req, next)
-  const startIndex = paginationHelper.getStartIndex(req, next)
+  const startIndex = paginationHelper.getStartIndex(req, next)  
 
   try{
+    const dbQuery = {
+      where: { 
+        tostaduria: { 
+          id: validateIDParam(tost_id) 
+        } 
+      }
+    }
+    
+    const totalCount = await prisma.sucursales.count(dbQuery)
     const sucursales = await prisma.sucursales.findMany({
-      where: { tostaduria: { id: validateIDParam(tost_id) } },
+      ...dbQuery,
       include: {
         ciudad: true, //Se incluye la ciudad en forma anidada
       },
@@ -62,7 +76,7 @@ const getSucursalesByTostaduria = async (req, res, next) =>{
       delete sucursal.tostaduria_id
       delete sucursal.ciudad_cp
     });
-    sendResult(res, sucursales)
+    sendResult(res, sucursales, totalCount)
 
   } catch(error){
     next(error)
